@@ -1,0 +1,21 @@
+services:
+  devora:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "80:3000"
+    environment:
+      ADMIN_USERNAME: admin
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@devora.com}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-Devora@2026}
+      SESSION_SECRET: ${SESSION_SECRET:-}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      JUDGE_CONCURRENCY: 2
+    volumes:
+      - devora-data:/app/data
+    # Limit what a runaway submission can take from the host.
+    mem_limit: 1536m
+    pids_limit: 512
+    cpus: 2
+volumes:
+  devora-data:

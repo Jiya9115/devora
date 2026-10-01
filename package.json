@@ -1,0 +1,21 @@
+{
+  "name": "devora",
+  "version": "1.0.0",
+  "description": "Devora: an online Java judge plus a placement command centre (applications board, practice log, skills, readiness score, public profile).",
+  "main": "server.js",
+  "private": true,
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "start": "node --disable-warning=ExperimentalWarning --env-file-if-exists=.env server.js",
+    "dev": "node --watch --disable-warning=ExperimentalWarning --env-file-if-exists=.env server.js",
+    "test": "node --disable-warning=ExperimentalWarning --test test/unit.test.js && node --disable-warning=ExperimentalWarning scripts/smoke.js",
+    "demo": "node --disable-warning=ExperimentalWarning scripts/demo.js",
+    "test:unit": "node --test test/unit.test.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "google-auth-library": "^9.15.1"
+  }
+}
