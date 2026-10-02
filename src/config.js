@@ -3,20 +3,12 @@ const path = require('path');
 const isVercel = process.env.VERCEL === '1';
 
 module.exports = {
-  // Vercel supplies PORT automatically.
   port: parseInt(process.env.PORT, 10) || 3000,
 
-  // Local:
-  //   ./data
-  //
-  // Vercel:
-  //   /app/data
-  //
-  // NOTE: Vercel container storage is ephemeral.
   dataDir:
     process.env.DATA_DIR ||
     (isVercel
-      ? path.join('/app', 'data')
+      ? '/tmp/devora-data'
       : path.join(__dirname, '..', 'data')),
 
   adminUser: process.env.ADMIN_USERNAME || 'admin',
@@ -29,21 +21,20 @@ module.exports = {
 
   defaultAdminPassword: 'Devora@2026',
 
-  sessionSecret: process.env.SESSION_SECRET || '',
+  sessionSecret:
+    process.env.SESSION_SECRET || 'devora-development-secret',
 
-  // IMPORTANT:
-  // Vercel does not run Docker daemon for your application container.
-  // Therefore use local Java execution.
-  sandbox: (process.env.JUDGE_SANDBOX || 'local').toLowerCase(),
+  sandbox:
+    (process.env.JUDGE_SANDBOX || 'local').toLowerCase(),
 
   dockerImage:
     process.env.JUDGE_DOCKER_IMAGE || 'eclipse-temurin:21-jdk',
 
-  // One Java submission at a time on Vercel.
-  concurrency: Math.max(
-    1,
-    parseInt(process.env.JUDGE_CONCURRENCY, 10) || 1
-  ),
+  concurrency:
+    Math.max(
+      1,
+      parseInt(process.env.JUDGE_CONCURRENCY, 10) || 1
+    ),
 
   javac: process.env.JAVAC || 'javac',
 
