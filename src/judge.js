@@ -86,26 +86,68 @@ function compile(dir, fileName) {
       onKill: () => spawn('docker', ['kill', name], { stdio: 'ignore' }),
     });
   }
-  return runProc(cfg.javac, ['-encoding', 'UTF-8', '-nowarn', fileName], {
+ return runProc(
+  cfg.java,
+  jvm,
+  {
+    input,
     cwd: dir,
-    timeoutMs: cfg.compileTimeoutMs,
-  });
+    timeoutMs: budget
+  }
+);
 }
 
 function execute(dir, className, input, timeLimitMs, memoryMb) {
-  const jvm = [
-    `-Xmx${memoryMb}m`, '-Xms16m', '-Xss64m', '-XX:+UseSerialGC',
-    '-XX:-UsePerfData', '-Dfile.encoding=UTF-8', className,
+  const jvmArgs = [
+    `-Xmx${memoryMb}m`,
+    '-Xms16m',
+    '-Xss64m',
+    '-XX:+UseSerialGC',
+    '-XX:-UsePerfData',
+    '-Dfile.encoding=UTF-8',
+    className,
   ];
+
   const budget = timeLimitMs + baselineMs + 400;
+
   if (DOCKER) {
     const name = `vr-${crypto.randomBytes(5).toString('hex')}`;
-    return runProc('docker', [...dockerBase(dir, name, memoryMb + 192, true), 'java', ...jvm], {
-      input, cwd: dir, timeoutMs: budget + 1500,
-      onKill: () => spawn('docker', ['kill', name], { stdio: 'ignore' }),
-    });
+
+    return runProc(
+      'docker',
+      [
+        ...dockerBase(
+          dir,
+          name,
+          memoryMb + 192,
+          true
+        ),
+        'java',
+        ...jvmArgs,
+      ],
+      {
+        input,
+        cwd: dir,
+        timeoutMs: budget + 1500,
+        onKill: () =>
+          spawn(
+            'docker',
+            ['kill', name],
+            { stdio: 'ignore' }
+          ),
+      }
+    );
   }
-  return runProc(cfg.java, jvm, { input, cwd: dir, timeoutMs: budget });
+
+  return runProc(
+    cfg.java,
+    jvmArgs,
+    {
+      input,
+      cwd: dir,
+      timeoutMs: budget,
+    }
+  );
 }
 
 /* ------------------------------------------------------------------ */
