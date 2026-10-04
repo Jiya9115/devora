@@ -86,16 +86,12 @@ function compile(dir, fileName) {
       onKill: () => spawn('docker', ['kill', name], { stdio: 'ignore' }),
     });
   }
- return runProc(
-  cfg.java,
-  jvm,
-  {
-    input,
+  return runProc(cfg.javac, ['-encoding', 'UTF-8', '-nowarn', fileName], {
     cwd: dir,
-    timeoutMs: budget
-  }
-);
+    timeoutMs: cfg.compileTimeoutMs,
+  });
 }
+
 
 function execute(dir, className, input, timeLimitMs, memoryMb) {
   const jvmArgs = [
